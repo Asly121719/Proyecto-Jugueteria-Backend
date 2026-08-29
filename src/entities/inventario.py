@@ -1,7 +1,21 @@
+from entities.categoria import Categoria
+
+
 class InventarioTienda:
-    def __init__(self, id_inventario: int, id_tienda: int, id_juguete: int, stock_actual: int, pasillo_ubicacion: str):
-        self.id_inventario = id_inventario
-        self.id_tienda = id_tienda
+    def __init__(
+        self,
+        id_juguete: int,
+        id_categoria: int,
+        id_proveedor: int,
+        nombre_producto: str,
+        precio_unitario: float,
+        categoria: Categoria,
+        stock_actual: int,
+    ):
         self.id_juguete = id_juguete
+        self.id_categoria = id_categoria
+        self.id_proveedor = id_proveedor
+        self.nombre_producto = nombre_producto
+        self.precio_unitario = precio_unitario
+        self.categoria = categoria  # Instancia de la clase Categoria
         self.stock_actual = stock_actual
-        self.pasillo_ubicacion = pasillo_ubicacion
