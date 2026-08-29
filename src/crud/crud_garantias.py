@@ -1,4 +1,4 @@
-from entities.garantia import Garantia
+from entities.garantias import Garantia
 
 garantias_db = []
 
