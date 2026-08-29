@@ -1,5 +1,5 @@
 from entities.categoria import Categoria
-from entities.inventario_tienda import InventarioTienda
+from entities.inventario import InventarioTienda
 
 # Creación de las 5 instancias de la clase Categoria
 cat_munecos = Categoria(1, "Muñecos", "Figuras y muñecos de acción", "+3 años", False)
