@@ -2,6 +2,7 @@ from src.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
+
 class Garantia(Base):
   __tablename__ = "garantias"
 
@@ -11,4 +12,4 @@ class Garantia(Base):
   tipo_cobertura = Column(String(100), nullable=False)
   estado_garantia = Column(String(50), nullable=False)
 
-  detalle_venta = relationship("DetalleVenta", back_populates="garantias")                                                                                                                                                                                                                 from src.database import Base
+  detalle_venta = relationship("DetalleVenta", back_populates="garantias")
