@@ -1,106 +1,137 @@
-from entities.categoria import Categoria
-from entities.inventario import InventarioTienda
-
-# Creación de las 5 instancias de la clase Categoria
-cat_munecos = Categoria(1, "Muñecos", "Figuras y muñecos de acción", "+3 años", False)
-cat_didacticos = Categoria(
-    2, "Didácticos", "Juegos para estimular el aprendizaje", "+5 años", False
-)
-cat_mesas = Categoria(
-    3, "Juegos de Mesa", "Juegos de estrategia y destreza familiar", "+8 años", False
-)
-cat_carros = Categoria(
-    4, "Carros y Pistas", "Vehículos a escala y pistas de carrera", "+4 años", False
-)
-cat_electricos = Categoria(
-    5, "Electrónicos", "Juguetes interactivos con circuitos", "+6 años", True
-)
-
-# Base de datos con los 5 juguetes quemados integrando los objetos Categoria
-inventario_db = [
-    InventarioTienda(
-        id_juguete=101,
-        id_categoria=1,
-        id_proveedor=501,
-        nombre_producto="Muñeco de Acción",
-        precio_unitario=45000.0,
-        categoria=cat_munecos,
-        stock_actual=20,
-    ),
-    InventarioTienda(
-        id_juguete=102,
-        id_categoria=2,
-        id_proveedor=502,
-        nombre_producto="Juego Didáctico Matemático",
-        precio_unitario=35000.0,
-        categoria=cat_didacticos,
-        stock_actual=15,
-    ),
-    InventarioTienda(
-        id_juguete=103,
-        id_categoria=3,
-        id_proveedor=503,
-        nombre_producto="Ajedrez de Madera",
-        precio_unitario=60000.0,
-        categoria=cat_mesas,
-        stock_actual=30,
-    ),
-    InventarioTienda(
-        id_juguete=104,
-        id_categoria=4,
-        id_proveedor=504,
-        nombre_producto="Carro a Control Remoto",
-        precio_unitario=120000.0,
-        categoria=cat_carros,
-        stock_actual=12,
-    ),
-    InventarioTienda(
-        id_juguete=105,
-        id_categoria=5,
-        id_proveedor=505,
-        nombre_producto="Consola Portátil Infantil",
-        precio_unitario=150000.0,
-        categoria=cat_electricos,
-        stock_actual=25,
-    ),
-]
+from src.database import SessionLocal
+from src.entities.inventario import InventarioTienda
+from src.entities.juguete import Juguete
 
 
-def gestionar_stock(id_juguete: int, cantidad_sumar: int):
-    """Actualiza el stock de un juguete existente buscando únicamente por su ID."""
-    item = next((i for i in inventario_db if i.id_juguete == id_juguete), None)
-    if item:
-        item.stock_actual += cantidad_sumar
-        print(
-            f"\n[ÉXITO] Stock actualizado. Nuevo stock de '{item.nombre_producto}': {item.stock_actual} unidades."
+def agregar_juguete(nombre: str, precio: float):
+    db = SessionLocal()
+    try:
+        # El ID del juguete se autogenera solo, pero sí te pedimos categoría, proveedor y stock
+        id_categoria = int(input("Ingrese el ID de la categoría: "))
+        id_proveedor = int(input("Ingrese el ID del proveedor: "))
+        stock_inicial = int(input("Ingrese el stock inicial para la tienda: "))
+        pasillo = input("Ingrese la ubicación / pasillo (ej. Pasillo 1): ")
+
+        # Creamos el juguete sin pasar el ID para que la base de datos lo asigne automáticamente
+        nuevo_juguete = Juguete(
+            nombre_producto=nombre,
+            precio_unitario=precio,
+            id_categoria=id_categoria,
+            id_proveedor=id_proveedor,
         )
-    else:
-        print(
-            f"\n[ALERTA] El juguete con ID #{id_juguete} no se encuentra registrado en el sistema."
+        db.add(nuevo_juguete)
+        db.commit()
+        db.refresh(nuevo_juguete)  # Recupera el ID autogenerado por la BD
+
+        # Usamos ese ID automático para registrar el inventario
+        nuevo_inventario = InventarioTienda(
+            id_tienda=1,
+            id_juguete=nuevo_juguete.id_juguete,
+            stock_actual=stock_inicial,
+            pasillo_ubicacion=pasillo,
         )
+        db.add(nuevo_inventario)
+        db.commit()
+
+        print(
+            f"\n[ÉXITO] Juguete '{nombre}' registrado con el ID automático"
+            f" #{nuevo_juguete.id_juguete} (Categoría: #{id_categoria},"
+            f" Proveedor: #{id_proveedor})."
+        )
+    except ValueError:
+        print("\n[ERROR] Los IDs, precios y stock deben ser valores numéricos válidos.")
+    except Exception as e:
+        db.rollback()
+        print(f"\n[ERROR] No se pudo agregar el juguete: {e}")
+    finally:
+        db.close()
+
+
+def eliminar_juguete(id_juguete: int):
+    db = SessionLocal()
+    try:
+        # Primero borramos registros de inventario asociados para evitar conflictos de llave foránea si aplica
+        db.query(InventarioTienda).filter_by(id_juguete=id_juguete).delete()
+
+        juguete = db.query(Juguete).filter_by(id_juguete=id_juguete).first()
+        if not juguete:
+            print(f"\n[ERROR] No se encontró un juguete con el ID {id_juguete}.")
+            db.rollback()
+            return
+
+        db.delete(juguete)
+        db.commit()
+        print(f"\n[ÉXITO] Juguete con ID {id_juguete} eliminado correctamente.")
+    except Exception as e:
+        db.rollback()
+        print(f"[ERROR] No se pudo eliminar el juguete: {e}")
+    finally:
+        db.close()
+
+
+def gestionar_stock(id_juguete: int, cantidad_sumar: int, id_tienda: int = 1):
+    db = SessionLocal()
+    try:
+        item = (
+            db.query(InventarioTienda)
+            .filter_by(id_juguete=id_juguete, id_tienda=id_tienda)
+            .first()
+        )
+        if item:
+            item.stock_actual += cantidad_sumar
+            db.commit()
+            print(
+                f"\n[ÉXITO] Stock actualizado. Nuevo stock de Juguete"
+                f" {id_juguete}: {item.stock_actual}"
+            )
+        else:
+            print(
+                f"\n[ALERTA] El juguete #{id_juguete} no está en el inventario de la"
+                " tienda."
+            )
+    finally:
+        db.close()
 
 
 def consultar_inventario_completo():
-    """Muestra la lista completa de todos los productos con sus atributos y stock actual."""
-    if not inventario_db:
-        print("\n[ALERTA] El inventario está vacío.")
-        return
-
-    print("\n--- LISTA COMPLETA DEL INVENTARIO ---")
-    print(
-        f"{'ID':<6} {'Nombre Producto':<28} {'Categoría':<18} {'Precio':<12} {'Stock'}"
-    )
-    print("-" * 75)
-    for item in inventario_db:
-        print(
-            f"{item.id_juguete:<6} {item.nombre_producto:<28} {item.categoria.nombre_categoria:<18} ${item.precio_unitario:<11.2f} {item.stock_actual}"
+    db = SessionLocal()
+    try:
+        # Hacemos un join para traer los datos reales del juguete (nombre y precio) junto al inventario
+        items = (
+            db.query(InventarioTienda, Juguete)
+            .join(Juguete, InventarioTienda.id_juguete == Juguete.id_juguete)
+            .all()
         )
+
+        print("\n=== INVENTARIO COMPLETO DE PRODUCTOS ===")
+        if not items:
+            print("No hay productos registrados en el inventario.")
+            return
+
+        for item, juguete in items:
+            print(
+                f"ID Juguete: {juguete.id_juguete} | Producto:"
+                f" {juguete.nombre_producto} | Precio: ${juguete.precio_unitario}"
+                f" | Stock: {item.stock_actual} | Ubicación:"
+                f" {item.pasillo_ubicacion}"
+            )
+    finally:
+        db.close()
+
+
+# Alias requerido por el main.py
+def consultar_inventario():
+    consultar_inventario_completo()
 
 
 def reducir_stock(id_juguete: int, cantidad: int) -> bool:
-    """Reduce el stock de un juguete si existe y hay disponibilidad suficiente."""
-    item = next((i for i in inventario_db if i.id_juguete == id_juguete), None)
-    if item and item.stock_actual >= cantidad:
-        item.stock_actual -= cantidad
-        return True
-    return False
+    db = SessionLocal()
+    try:
+        item = db.query(InventarioTienda).filter_by(id_juguete=id_juguete).first()
+        if item and item.stock_actual >= cantidad:
+            item.stock_actual -= cantidad
+            db.commit()
+            return True
+        return False
+    finally:
+        db.close()
