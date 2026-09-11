@@ -1,6 +1,6 @@
+from src.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
 
 class Garantia(Base):
   __tablename__ = "garantias"
