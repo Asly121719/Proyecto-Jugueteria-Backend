@@ -1,16 +1,14 @@
-class Garantia:
-    def _init_(
-        self,
-        id_garantia: int,
-        id_detalle_venta: int,
-        duracion_meses: int,
-        tipo_cobertura: str,
-        estado_garantia: str,
-    ):
-        self.id_garantia = id_garantia
-        self.id_detalle_venta = id_detalle_venta
-        self.duracion_meses = duracion_meses
-        # Coberturas: Defecto de fábrica, Daño accidental, Extendida
-        self.tipo_cobertura = tipo_cobertura
-        # Estados: Activa, Expirada, Reclamada
-        self.estado_garantia = estado_garantia
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+
+class Garantia(Base):
+  __tablename__ = "garantias"
+
+  id_garantia = Column(Integer, primary_key=True, autoincrement=True)
+  id_detalle_venta = Column(Integer, ForeignKey("detalle_ventas.id_detalle"))
+  duracion_meses = Column(Integer, nullable=False)
+  tipo_cobertura = Column(String(100), nullable=False)
+  estado_garantia = Column(String(50), nullable=False)
+
+  detalle_venta = relationship("DetalleVenta", back_populates="garantias")                                                                                                                                                                                                                 from src.database import Base
