@@ -1,7 +1,18 @@
-class Promocion:
-    def __init__(self, id_promocion: int, nombre_campana: str, porcentaje_descuento: float, fecha_inicio: str, fecha_fin: str):
-        self.id_promocion = id_promocion
-        self.nombre_campana = nombre_campana
-        self.porcentaje_descuento = porcentaje_descuento
-        self.fecha_inicio = fecha_inicio
-        self.fecha_fin = fecha_fin
+from src.database import Base
+from sqlalchemy import Column, Integer, Numeric, String
+from sqlalchemy.orm import relationship
+from .juguete import promocion_juguetes
+
+
+class Promocion(Base):
+  __tablename__ = "promociones"
+
+  id_promocion = Column(Integer, primary_key=True, autoincrement=True)
+  nombre_campana = Column(String(150), nullable=False)
+  porcentaje_descuento = Column(Numeric(5, 2), nullable=False)
+  fecha_inicio = Column(String(50), nullable=False)
+  fecha_fin = Column(String(50), nullable=False)
+
+  juguetes = relationship(
+      "Juguete", secondary=promocion_juguetes, back_populates="promociones"
+  )
