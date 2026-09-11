@@ -1,7 +1,20 @@
-class DetalleVenta:
-    def __init__(self, id_detalle: int, id_venta: int, id_juguete: int, cantidad_comprada: int, subtotal: float):
-        self.id_detalle = id_detalle
-        self.id_venta = id_venta
-        self.id_juguete = id_juguete
-        self.cantidad_comprada = cantidad_comprada
-        self.subtotal = subtotal
+from src.database import Base
+from sqlalchemy import Column, ForeignKey, Integer, Numeric
+from sqlalchemy.orm import relationship
+
+
+class DetalleVenta(Base):
+  _tablename_ = "detalle_ventas"
+  _table_args_ = {
+      "extend_existing": True
+      }
+
+  id_detalle = Column(Integer, primary_key=True, autoincrement=True)
+  id_venta = Column(Integer, ForeignKey("ventas.id_venta"))
+  id_juguete = Column(Integer, ForeignKey("juguetes.id_juguete"))
+  cantidad_comprada = Column(Integer, nullable=False)
+  subtotal = Column(Numeric(10, 2), nullable=False)
+
+  venta = relationship("Venta", back_populates="detalles")
+  juguete = relationship("Juguete", back_populates="detalles")
+  garantias = relationship("Garantia", back_populates="detalle_venta")
