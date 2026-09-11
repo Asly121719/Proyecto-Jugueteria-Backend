@@ -1,16 +1,15 @@
-class Categoria:
-    def __init__(
-        self,
-        id_categoria: int,
-        nombre_categoria: str,
-        descripcion: str,
-        edad_recomendada: str,
-        es_electrico: bool,
-    ):
-        self.id_categoria = id_categoria
-        self.nombre_categoria = (
-            nombre_categoria  # ej: Didáctico, Eléctrico, Aprendizaje
-        )
-        self.descripcion = descripcion
-        self.edad_recomendada = edad_recomendada
-        self.es_electrico = es_electrico
+from src.database import Base
+from sqlalchemy import Boolean, Column, Integer, String, Text
+from sqlalchemy.orm import relationship
+
+
+class Categoria(Base):
+  _tablename_ = "categorias"
+
+  id_categoria = Column(Integer, primary_key=True, autoincrement=True)
+  nombre_categoria = Column(String(100), nullable=False)
+  descripcion = Column(Text)
+  edad_recomendada = Column(String(50))
+  es_electrico = Column(Boolean, default=False)
+
+  juguetes = relationship("Juguete", back_populates="categoria")
