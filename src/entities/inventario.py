@@ -1,21 +1,16 @@
-from entities.categoria import Categoria
+from src.database import Base
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 
-class InventarioTienda:
-    def __init__(
-        self,
-        id_juguete: int,
-        id_categoria: int,
-        id_proveedor: int,
-        nombre_producto: str,
-        precio_unitario: float,
-        categoria: Categoria,
-        stock_actual: int,
-    ):
-        self.id_juguete = id_juguete
-        self.id_categoria = id_categoria
-        self.id_proveedor = id_proveedor
-        self.nombre_producto = nombre_producto
-        self.precio_unitario = precio_unitario
-        self.categoria = categoria  # Instancia de la clase Categoria
-        self.stock_actual = stock_actual
+class InventarioTienda(Base):
+    _tablename_ = "inventario_tiendas"
+
+    id_inventario = Column(Integer, primary_key=True, autoincrement=True)
+    id_tienda = Column(Integer, ForeignKey("tiendas.id_tienda"))
+    id_juguete = Column(Integer, ForeignKey("juguetes.id_juguete"))
+    stock_actual = Column(Integer, nullable=False, default=0)
+    pasillo_ubicacion = Column(String(100))
+
+    tienda = relationship("Tienda", back_populates="inventarios")
+    juguete = relationship("Juguete", back_populates="inventarios")
