@@ -1,14 +1,15 @@
-class Proveedor:
-    def _init_(
-        self,
-        id_proveedor: int,
-        razon_social: str,
-        nombre_contacto: str,
-        telefono: str,
-        pais_origen: str,
-    ):
-        self.id_proveedor = id_proveedor
-        self.razon_social = razon_social
-        self.nombre_contacto = nombre_contacto
-        self.telefono = telefono
-        self.pais_origen = pais_origen
+from src.database import Base
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+
+
+class Proveedor(Base):
+  __tablename__ = "proveedores"
+
+  id_proveedor = Column(Integer, primary_key=True, autoincrement=True)
+  razon_social = Column(String(150), nullable=False)
+  nombre_contacto = Column(String(100))
+  telefono = Column(String(50))
+  pais_origen = Column(String(100))
+
+  juguetes = relationship("Juguete", back_populates="proveedor")
