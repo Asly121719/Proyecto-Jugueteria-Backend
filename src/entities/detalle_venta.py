@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class DetalleVenta(Base):
-  _tablename_ = "detalle_ventas"
+  ___tablename__ = "detalle_ventas"
   _table_args_ = {
       "extend_existing": True
       }

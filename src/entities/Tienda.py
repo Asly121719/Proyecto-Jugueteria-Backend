@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Tienda(Base):
-  _tablename_ = "tiendas"
+  __tablename__= "tiendas"
 
   id_tienda = Column(Integer, primary_key=True, autoincrement=True)
   nombre_sucursal = Column(String(100), nullable=False)
