@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Empleado(Base):
-  _tablename_ = "empleados"
+  __tablename__ = "empleados"
 
   id_empleado = Column(Integer, primary_key=True, autoincrement=True)
   id_tienda = Column(Integer, ForeignKey("tiendas.id_tienda"))

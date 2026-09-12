@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Cargo(Base):
-    _tablename_ = "cargos"
+    __tablename__ = "cargos"
 
     id_cargo = Column(Integer, primary_key=True, autoincrement=True)
     titulo_cargo = Column(String(100), nullable=False)

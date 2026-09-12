@@ -22,7 +22,7 @@ promocion_juguetes = Table(
 
 
 class Juguete(Base):
-  _tablename_ = "juguetes"
+  __tablename__ = "juguetes"
 
   id_juguete = Column(Integer, primary_key=True, autoincrement=True)
   id_categoria = Column(Integer, ForeignKey("categorias.id_categoria"))
