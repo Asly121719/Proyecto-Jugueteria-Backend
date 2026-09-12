@@ -5,7 +5,7 @@ import sys
 # Permite resolver imports desde la carpeta src
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from src.crud import crud_garantias, crud_inventario, crud_venta
+from src.crud import crud_garantias, crud_inventario, crud_ventas
 from src.seeders import ejecutar_seeders
 
 
@@ -24,12 +24,12 @@ def menu_ventas():
       precio = float(input("Precio unitario: "))
       cli = input("ID Cliente (dejar vacío si es anónimo): ")
       id_c = int(cli) if cli.strip() else None
-      crud_venta.registrar_venta(
+      crud_ventas.registrar_venta(
           id_t, id_e, id_j, cant, precio, crud_inventario, id_c
       )
     elif op == "2":
       id_v = int(input("Ingrese ID de Venta a buscar: "))
-      crud_venta.consultar_venta(id_v)
+      crud_ventas.consultar_venta(id_v)
     elif op == "3":
       break
     else:
