@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Categoria(Base):
-  _tablename_ = "categorias"
+  __tablename__ = "categorias"
 
   id_categoria = Column(Integer, primary_key=True, autoincrement=True)
   nombre_categoria = Column(String(100), nullable=False)
