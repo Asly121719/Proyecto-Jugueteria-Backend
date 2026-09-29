@@ -5,7 +5,7 @@ import sys
 # Permite resolver imports desde la carpeta src
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from src.crud import crud_garantias, crud_inventario, crud_ventas
+from src.crud import crud_garantias, crud_inventario, crud_venta
 from src.seeders import ejecutar_seeders
 
 
