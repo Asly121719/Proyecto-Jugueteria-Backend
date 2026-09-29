@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 
 
 class DetalleVenta(Base):
-  _tablename_ = "detalle_ventas"
-  _table_args_ = {
+  __tablename__ = "detalle_ventas"
+  __table_args__ = {
       "extend_existing": True
       }
 
