@@ -1,129 +1,79 @@
-from src.models import *
+# main.py
 import os
 import sys
 
 # Permite resolver imports desde la carpeta src
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from src.crud import crud_garantias, crud_inventario, crud_venta
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.database import Base, engine
+from src.routers import (
+    cargo_router,
+    categoria_router,
+    cliente_router,
+    detalle_venta_router,
+    empleado_router,
+    garantia_router,
+    inventario_router,
+    juguete_router,
+    promocion_router,
+    proveedor_router,
+    tienda_router,
+    venta_router,
+)
 from src.seeders import ejecutar_seeders
 
+# Crear las tablas en Neon si no existen
+Base.metadata.create_all(bind=engine)
 
-def menu_ventas():
-    while True:
-        print("\n--- MENÚ DE VENTAS (TRANSACCIONES) ---")
-        print("1. Registrar venta")
-        print("2. Consultar historial de venta")
-        print("3. Volver al menú principal")
-        op = input("Seleccione una opción: ")
-        if op == "1":
-            id_t = int(input("ID Tienda (ej: 1): "))
-            id_e = int(input("ID Empleado (ej: 1): "))
-            id_j = int(input("ID Juguete a vender (ej: 1): "))
-            cant = int(input("Cantidad a comprar: "))
-            precio = float(input("Precio unitario: "))
-            cli = input("ID Cliente (dejar vacío si es anónimo): ")
-            id_c = int(cli) if cli.strip() else None
-            crud_venta.registrar_venta(
-                id_t, id_e, id_j, cant, precio, crud_inventario, id_c
-            )
-        elif op == "2":
-            id_v = int(input("Ingrese ID de Venta a buscar: "))
-            crud_venta.consultar_venta(id_v)
-        elif op == "3":
-            break
-        else:
-            print("\nOpción inválida. Intente de nuevo.")
+app = FastAPI(
+    title="API Sistema de Gestión de Juguetería",
+    version="2.0",
+    description="Backend conectado a Neon PostgreSQL con FastAPI, CORS y Swagger completo.",
+)
 
+# Configuración de CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def menu_inventario():
-    while True:
-        print("\n--- MENÚ INVENTARIO ---")
-        print("1. Consultar inventario")
-        print("2. Agregar nuevo juguete")
-        print("3. Reducir stock")
-        print("4. Eliminar juguete por ID")
-        print("5. Volver al menú principal")
-        op = input("Seleccione una opción: ")
-
-        if op == "1":
-            crud_inventario.consultar_inventario()
-        elif op == "2":
-            nombre = input("Nombre del juguete: ")
-            precio = float(input("Precio unitario: "))
-            crud_inventario.agregar_juguete(nombre, precio)
-        elif op == "3":
-            id_j = int(input("ID Juguete: "))
-            cant = int(input("Cantidad a reducir: "))
-            crud_inventario.reducir_stock(id_j, cant)
-        elif op == "4":
-            id_j = int(input("Ingrese el ID del juguete que desea eliminar: "))
-            crud_inventario.eliminar_juguete(id_j)
-        elif op == "5":
-            break
-        else:
-            print("[ERROR] Opción no válida.")
+# Registrar todos los Routers
+app.include_router(categoria_router.router)
+app.include_router(cliente_router.router)
+app.include_router(juguete_router.router)
+app.include_router(tienda_router.router)
+app.include_router(empleado_router.router)
+app.include_router(cargo_router.router)
+app.include_router(proveedor_router.router)
+app.include_router(inventario_router.router)
+app.include_router(venta_router.router)
+app.include_router(detalle_venta_router.router)
+app.include_router(promocion_router.router)
+app.include_router(garantia_router.router)
 
 
-def menu_garantias():
-    while True:
-        print("\n--- MENÚ DE GARANTÍAS ---")
-        print("1. Crear Garantía")
-        print("2. Consultar Garantía")
-        print("3. Actualizar Estado de Garantía")
-        print("4. Eliminar Garantía")
-        print("5. Volver al menú principal")
-        op = input("Seleccione una opción: ")
-        if op == "1":
-            id_d = int(input("ID Detalle Venta asociado: "))
-            duracion = int(input("Duración en meses (ej: 12): "))
-            cobertura = input(
-                "Tipo Cobertura (Defecto de fábrica/Daño accidental/Extendida): "
-            )
-            crud_garantias.crear_garantia(id_d, duracion, cobertura)
-        elif op == "2":
-            id_g = int(input("ID Garantía: "))
-            crud_garantias.consultar_garantia(id_g)
-        elif op == "3":
-            id_g = int(input("ID Garantía: "))
-            estado = input("Nuevo estado (Activa/Expirada/Reclamada): ")
-            crud_garantias.actualizar_garantia(id_g, estado)
-        elif op == "4":
-            id_g = int(input("ID Garantía a eliminar: "))
-            crud_garantias.eliminar_garantia(id_g)
-        elif op == "5":
-            break
-        else:
-            print("\nOpción inválida. Intente de nuevo.")
-
-
-def main():
-    # Ejecuta los seeders automáticamente al iniciar el sistema
+@app.on_event("startup")
+def startup_event():
     print("Inicializando conexión y seeders con Neon...")
     ejecutar_seeders()
 
-    print("============================================")
-    print("    SISTEMA DE GESTIÓN DE JUGUETERÍA v2.0    ")
-    print("============================================")
-    while True:
-        print("\n=== MENÚ PRINCIPAL ===")
-        print("1. Módulo de Ventas")
-        print("2. Módulo de Inventario")
-        print("3. Módulo de Garantías")
-        print("4. Salir")
-        opcion = input("Seleccione una opción (1-4): ")
-        if opcion == "1":
-            menu_ventas()
-        elif opcion == "2":
-            menu_inventario()
-        elif opcion == "3":
-            menu_garantias()
-        elif opcion == "4":
-            print("\n¡Gracias por usar el sistema! Saliendo...")
-            break
-        else:
-            print("\nOpción inválida. Intente de nuevo.")
+
+@app.get("/", tags=["Root"])
+def read_root():
+    return {
+        "mensaje": (
+            "Bienvenido a la API de la Juguetería v2.0 - Visita /docs para Swagger"
+        )
+    }
 
 
 if __name__ == "__main__":
-    main()
+    import uvicorn
+
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
