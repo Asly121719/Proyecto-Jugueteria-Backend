@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.categoria import Categoria
 from src.schemas.categoria_schema import (
@@ -10,7 +10,6 @@ from src.schemas.categoria_schema import (
     CategoriaUpdate,
 )
 from src.utils.constants import (
-    HTTP_BAD_REQUEST,
     HTTP_CREATED,
     HTTP_NO_CONTENT,
     HTTP_NOT_FOUND,
@@ -24,7 +23,7 @@ def obtener_categorias(skip: int = 0, limit: int = 100, db: Session = Depends(ge
     return db.query(Categoria).offset(skip).limit(limit).all()
 
 @router.get("/{id_categoria}", response_model=CategoriaResponse, status_code=HTTP_OK)
-def obtener_categoria(id_categoria: int, db: Session = Depends(get_db)):
+def obtener_categoria(id_categoria: UUID, db: Session = Depends(get_db)):
     item = db.query(Categoria).filter(Categoria.id_categoria == id_categoria).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Categoría no encontrada")
@@ -39,7 +38,7 @@ def crear_categoria(data: CategoriaCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_categoria}", response_model=CategoriaResponse, status_code=HTTP_OK)
-def actualizar_categoria(id_categoria: int, data: CategoriaUpdate, db: Session = Depends(get_db)):
+def actualizar_categoria(id_categoria: UUID, data: CategoriaUpdate, db: Session = Depends(get_db)):
     item = db.query(Categoria).filter(Categoria.id_categoria == id_categoria).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Categoría no encontrada")
@@ -50,7 +49,7 @@ def actualizar_categoria(id_categoria: int, data: CategoriaUpdate, db: Session =
     return item
 
 @router.delete("/{id_categoria}", status_code=HTTP_NO_CONTENT)
-def eliminar_categoria(id_categoria: int, db: Session = Depends(get_db)):
+def eliminar_categoria(id_categoria: UUID, db: Session = Depends(get_db)):
     item = db.query(Categoria).filter(Categoria.id_categoria == id_categoria).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Categoría no encontrada")

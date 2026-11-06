@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.detalle_venta import DetalleVenta
 from src.schemas.detalle_venta_schema import (
@@ -23,7 +23,7 @@ def obtener_detalles(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     return db.query(DetalleVenta).offset(skip).limit(limit).all()
 
 @router.get("/{id_detalle}", response_model=DetalleVentaResponse, status_code=HTTP_OK)
-def obtener_detalle(id_detalle: int, db: Session = Depends(get_db)):
+def obtener_detalle(id_detalle: UUID, db: Session = Depends(get_db)):
     item = db.query(DetalleVenta).filter(DetalleVenta.id_detalle == id_detalle).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Detalle de venta no encontrado")
@@ -38,7 +38,7 @@ def crear_detalle(data: DetalleVentaCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_detalle}", response_model=DetalleVentaResponse, status_code=HTTP_OK)
-def actualizar_detalle(id_detalle: int, data: DetalleVentaUpdate, db: Session = Depends(get_db)):
+def actualizar_detalle(id_detalle: UUID, data: DetalleVentaUpdate, db: Session = Depends(get_db)):
     item = db.query(DetalleVenta).filter(DetalleVenta.id_detalle == id_detalle).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Detalle de venta no encontrado")
@@ -49,7 +49,7 @@ def actualizar_detalle(id_detalle: int, data: DetalleVentaUpdate, db: Session = 
     return item
 
 @router.delete("/{id_detalle}", status_code=HTTP_NO_CONTENT)
-def eliminar_detalle(id_detalle: int, db: Session = Depends(get_db)):
+def eliminar_detalle(id_detalle: UUID, db: Session = Depends(get_db)):
     item = db.query(DetalleVenta).filter(DetalleVenta.id_detalle == id_detalle).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Detalle de venta no encontrado")

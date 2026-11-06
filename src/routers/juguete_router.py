@@ -1,8 +1,7 @@
-# src/routers/juguete_router.py
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.juguete import Juguete
 from src.schemas.juguete_schema import JugueteCreate, JugueteResponse, JugueteUpdate
@@ -20,7 +19,7 @@ def obtener_juguetes(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     return db.query(Juguete).offset(skip).limit(limit).all()
 
 @router.get("/{id_juguete}", response_model=JugueteResponse, status_code=HTTP_OK)
-def obtener_juguete(id_juguete: int, db: Session = Depends(get_db)):
+def obtener_juguete(id_juguete: UUID, db: Session = Depends(get_db)):
     item = db.query(Juguete).filter(Juguete.id_juguete == id_juguete).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Juguete no encontrado")
@@ -35,7 +34,7 @@ def crear_juguete(data: JugueteCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_juguete}", response_model=JugueteResponse, status_code=HTTP_OK)
-def actualizar_juguete(id_juguete: int, data: JugueteUpdate, db: Session = Depends(get_db)):
+def actualizar_juguete(id_juguete: UUID, data: JugueteUpdate, db: Session = Depends(get_db)):
     item = db.query(Juguete).filter(Juguete.id_juguete == id_juguete).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Juguete no encontrado")
@@ -46,7 +45,7 @@ def actualizar_juguete(id_juguete: int, data: JugueteUpdate, db: Session = Depen
     return item
 
 @router.delete("/{id_juguete}", status_code=HTTP_NO_CONTENT)
-def eliminar_juguete(id_juguete: int, db: Session = Depends(get_db)):
+def eliminar_juguete(id_juguete: UUID, db: Session = Depends(get_db)):
     item = db.query(Juguete).filter(Juguete.id_juguete == id_juguete).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Juguete no encontrado")

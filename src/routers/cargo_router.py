@@ -1,8 +1,7 @@
-# src/routers/cargo_router.py
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.cargo import Cargo
 from src.schemas.cargo_schema import CargoCreate, CargoResponse, CargoUpdate
@@ -20,7 +19,7 @@ def obtener_cargos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     return db.query(Cargo).offset(skip).limit(limit).all()
 
 @router.get("/{id_cargo}", response_model=CargoResponse, status_code=HTTP_OK)
-def obtener_cargo(id_cargo: int, db: Session = Depends(get_db)):
+def obtener_cargo(id_cargo: UUID, db: Session = Depends(get_db)):
     item = db.query(Cargo).filter(Cargo.id_cargo == id_cargo).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cargo no encontrado")
@@ -35,7 +34,7 @@ def crear_cargo(data: CargoCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_cargo}", response_model=CargoResponse, status_code=HTTP_OK)
-def actualizar_cargo(id_cargo: int, data: CargoUpdate, db: Session = Depends(get_db)):
+def actualizar_cargo(id_cargo: UUID, data: CargoUpdate, db: Session = Depends(get_db)):
     item = db.query(Cargo).filter(Cargo.id_cargo == id_cargo).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cargo no encontrado")
@@ -46,7 +45,7 @@ def actualizar_cargo(id_cargo: int, data: CargoUpdate, db: Session = Depends(get
     return item
 
 @router.delete("/{id_cargo}", status_code=HTTP_NO_CONTENT)
-def eliminar_cargo(id_cargo: int, db: Session = Depends(get_db)):
+def eliminar_cargo(id_cargo: UUID, db: Session = Depends(get_db)):
     item = db.query(Cargo).filter(Cargo.id_cargo == id_cargo).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cargo no encontrado")
