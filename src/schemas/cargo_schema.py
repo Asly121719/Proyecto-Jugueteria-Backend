@@ -1,7 +1,6 @@
-# src/schemas/cargo_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
-
 
 class CargoBase(BaseModel):
     titulo_cargo: str = Field(..., max_length=100)
@@ -9,10 +8,8 @@ class CargoBase(BaseModel):
     nivel_acceso: str = Field(..., max_length=50)
     funciones_principales: str
 
-
 class CargoCreate(CargoBase):
     pass
-
 
 class CargoUpdate(BaseModel):
     titulo_cargo: Optional[str] = Field(None, max_length=100)
@@ -20,9 +17,8 @@ class CargoUpdate(BaseModel):
     nivel_acceso: Optional[str] = Field(None, max_length=50)
     funciones_principales: Optional[str] = None
 
-
 class CargoResponse(CargoBase):
-    id_cargo: int
+    id_cargo: UUID
 
     class Config:
         from_attributes = True

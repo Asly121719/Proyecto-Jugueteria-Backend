@@ -1,17 +1,18 @@
-from src.database import Base
-from sqlalchemy import Column, Integer, String
+import uuid
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
+from src.database import Base
 
 class Tienda(Base):
-  __tablename__ = "tiendas"
+    __tablename__ = "tiendas"
 
-  id_tienda = Column(Integer, primary_key=True, autoincrement=True)
-  nombre_sucursal = Column(String(100), nullable=False)
-  direccion = Column(String(255), nullable=False)
-  telefono = Column(String(50), nullable=False)
-  horario_apertura = Column(String(100), nullable=False)
+    id_tienda = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    nombre_sucursal = Column(String(100), nullable=False)
+    direccion = Column(String(255), nullable=False)
+    telefono = Column(String(50), nullable=False)
+    horario_apertura = Column(String(100), nullable=False)
 
-  empleados = relationship("Empleado", back_populates="tienda")
-  inventarios = relationship("InventarioTienda", back_populates="tienda")
-  ventas = relationship("Venta", back_populates="tienda")
+    empleados = relationship("Empleado", back_populates="tienda")
+    inventarios = relationship("InventarioTienda", back_populates="tienda")
+    ventas = relationship("Venta", back_populates="tienda")

@@ -1,4 +1,5 @@
 from typing import List
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -23,7 +24,7 @@ def obtener_garantias(skip: int = 0, limit: int = 100, db: Session = Depends(get
     return db.query(Garantia).offset(skip).limit(limit).all()
 
 @router.get("/{id_garantia}", response_model=GarantiaResponse, status_code=HTTP_OK)
-def obtener_garantia(id_garantia: int, db: Session = Depends(get_db)):
+def obtener_garantia(id_garantia: UUID, db: Session = Depends(get_db)):
     item = db.query(Garantia).filter(Garantia.id_garantia == id_garantia).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Garantía no encontrada")
@@ -38,7 +39,7 @@ def crear_garantia(data: GarantiaCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_garantia}", response_model=GarantiaResponse, status_code=HTTP_OK)
-def actualizar_garantia(id_garantia: int, data: GarantiaUpdate, db: Session = Depends(get_db)):
+def actualizar_garantia(id_garantia: UUID, data: GarantiaUpdate, db: Session = Depends(get_db)):
     item = db.query(Garantia).filter(Garantia.id_garantia == id_garantia).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Garantía no encontrada")
@@ -49,7 +50,7 @@ def actualizar_garantia(id_garantia: int, data: GarantiaUpdate, db: Session = De
     return item
 
 @router.delete("/{id_garantia}", status_code=HTTP_NO_CONTENT)
-def eliminar_garantia(id_garantia: int, db: Session = Depends(get_db)):
+def eliminar_garantia(id_garantia: UUID, db: Session = Depends(get_db)):
     item = db.query(Garantia).filter(Garantia.id_garantia == id_garantia).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Garantía no encontrada")

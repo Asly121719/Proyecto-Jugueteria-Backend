@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.promocion import Promocion
 from src.schemas.promocion_schema import (
@@ -23,7 +23,7 @@ def obtener_promociones(skip: int = 0, limit: int = 100, db: Session = Depends(g
     return db.query(Promocion).offset(skip).limit(limit).all()
 
 @router.get("/{id_promocion}", response_model=PromocionResponse, status_code=HTTP_OK)
-def obtener_promocion(id_promocion: int, db: Session = Depends(get_db)):
+def obtener_promocion(id_promocion: UUID, db: Session = Depends(get_db)):
     item = db.query(Promocion).filter(Promocion.id_promocion == id_promocion).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Promoción no encontrada")
@@ -38,7 +38,7 @@ def crear_promocion(data: PromocionCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_promocion}", response_model=PromocionResponse, status_code=HTTP_OK)
-def actualizar_promocion(id_promocion: int, data: PromocionUpdate, db: Session = Depends(get_db)):
+def actualizar_promocion(id_promocion: UUID, data: PromocionUpdate, db: Session = Depends(get_db)):
     item = db.query(Promocion).filter(Promocion.id_promocion == id_promocion).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Promoción no encontrada")
@@ -49,7 +49,7 @@ def actualizar_promocion(id_promocion: int, data: PromocionUpdate, db: Session =
     return item
 
 @router.delete("/{id_promocion}", status_code=HTTP_NO_CONTENT)
-def eliminar_promocion(id_promocion: int, db: Session = Depends(get_db)):
+def eliminar_promocion(id_promocion: UUID, db: Session = Depends(get_db)):
     item = db.query(Promocion).filter(Promocion.id_promocion == id_promocion).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Promoción no encontrada")

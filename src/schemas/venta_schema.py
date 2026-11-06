@@ -1,24 +1,26 @@
-# src/schemas/venta_schema.py
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from uuid import UUID
+from datetime import datetime
+from typing import List, Optional
 
-class VentaBase(BaseModel):
-    id_tienda: int
-    id_empleado: int
-    id_cliente: Optional[int] = None
-    fecha_hora_venta: str = Field(..., max_length=50)
+class DetalleVentaCreate(BaseModel):
+    id_juguete: UUID
+    cantidad_comprada: int
 
-class VentaCreate(VentaBase):
-    pass
+class VentaCreate(BaseModel):
+    id_tienda: UUID
+    id_empleado: UUID
+    id_cliente: UUID
+    fecha_hora_venta: Optional[datetime] = None
+    detalles: List[DetalleVentaCreate] # 👈 Recibe los productos seleccionados en el form
 
-class VentaUpdate(BaseModel):
-    id_tienda: Optional[int] = None
-    id_empleado: Optional[int] = None
-    id_cliente: Optional[int] = None
-    fecha_hora_venta: Optional[str] = Field(None, max_length=50)
-
-class VentaResponse(VentaBase):
-    id_venta: int
+class VentaResponse(BaseModel):
+    id_venta: UUID
+    id_tienda: UUID
+    id_empleado: UUID
+    id_cliente: UUID
+    fecha_hora_venta: datetime
+    total: float
 
     class Config:
         from_attributes = True
