@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.Proveedor import Proveedor
 from src.schemas.proveedor_schema import (
@@ -23,7 +23,7 @@ def obtener_proveedores(skip: int = 0, limit: int = 100, db: Session = Depends(g
     return db.query(Proveedor).offset(skip).limit(limit).all()
 
 @router.get("/{id_proveedor}", response_model=ProveedorResponse, status_code=HTTP_OK)
-def obtener_proveedor(id_proveedor: int, db: Session = Depends(get_db)):
+def obtener_proveedor(id_proveedor: UUID, db: Session = Depends(get_db)):
     item = db.query(Proveedor).filter(Proveedor.id_proveedor == id_proveedor).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Proveedor no encontrado")
@@ -38,7 +38,7 @@ def crear_proveedor(data: ProveedorCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_proveedor}", response_model=ProveedorResponse, status_code=HTTP_OK)
-def actualizar_proveedor(id_proveedor: int, data: ProveedorUpdate, db: Session = Depends(get_db)):
+def actualizar_proveedor(id_proveedor: UUID, data: ProveedorUpdate, db: Session = Depends(get_db)):
     item = db.query(Proveedor).filter(Proveedor.id_proveedor == id_proveedor).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Proveedor no encontrado")
@@ -49,7 +49,7 @@ def actualizar_proveedor(id_proveedor: int, data: ProveedorUpdate, db: Session =
     return item
 
 @router.delete("/{id_proveedor}", status_code=HTTP_NO_CONTENT)
-def eliminar_proveedor(id_proveedor: int, db: Session = Depends(get_db)):
+def eliminar_proveedor(id_proveedor: UUID, db: Session = Depends(get_db)):
     item = db.query(Proveedor).filter(Proveedor.id_proveedor == id_proveedor).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Proveedor no encontrado")

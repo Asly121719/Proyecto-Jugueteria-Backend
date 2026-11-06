@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.cliente import Cliente
 from src.schemas.cliente_schema import ClienteCreate, ClienteResponse, ClienteUpdate
@@ -20,7 +20,7 @@ def obtener_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     return db.query(Cliente).offset(skip).limit(limit).all()
 
 @router.get("/{id_cliente}", response_model=ClienteResponse, status_code=HTTP_OK)
-def obtener_cliente(id_cliente: int, db: Session = Depends(get_db)):
+def obtener_cliente(id_cliente: UUID, db: Session = Depends(get_db)):
     item = db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cliente no encontrado")
@@ -38,7 +38,7 @@ def crear_cliente(data: ClienteCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_cliente}", response_model=ClienteResponse, status_code=HTTP_OK)
-def actualizar_cliente(id_cliente: int, data: ClienteUpdate, db: Session = Depends(get_db)):
+def actualizar_cliente(id_cliente: UUID, data: ClienteUpdate, db: Session = Depends(get_db)):
     item = db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cliente no encontrado")
@@ -49,7 +49,7 @@ def actualizar_cliente(id_cliente: int, data: ClienteUpdate, db: Session = Depen
     return item
 
 @router.delete("/{id_cliente}", status_code=HTTP_NO_CONTENT)
-def eliminar_cliente(id_cliente: int, db: Session = Depends(get_db)):
+def eliminar_cliente(id_cliente: UUID, db: Session = Depends(get_db)):
     item = db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Cliente no encontrado")

@@ -1,4 +1,4 @@
-# src/schemas/promocion_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class PromocionUpdate(BaseModel):
     fecha_fin: Optional[str] = Field(None, max_length=50)
 
 class PromocionResponse(PromocionBase):
-    id_promocion: int
+    id_promocion: UUID
 
     class Config:
         from_attributes = True

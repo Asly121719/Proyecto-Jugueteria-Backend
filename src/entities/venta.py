@@ -1,20 +1,22 @@
-from src.database import Base
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Numeric
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
+import uuid
+from datetime import datetime
+from src.database import Base
 
 class Venta(Base):
     __tablename__ = "ventas"
+    __table_args__ = {'extend_existing': True}
 
-    id_venta = Column(Integer, primary_key=True, autoincrement=True)
-    id_tienda = Column(Integer, ForeignKey("tiendas.id_tienda"))
-    id_empleado = Column(Integer, ForeignKey("empleados.id_empleado"))
-    id_cliente = Column(Integer, ForeignKey("clientes.id_cliente"), nullable=True)
-    fecha_hora_venta = Column(String(50), nullable=False)
+    id_venta = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id_tienda = Column(UUID(as_uuid=True), ForeignKey("tiendas.id_tienda"), nullable=False)
+    id_empleado = Column(UUID(as_uuid=True), ForeignKey("empleados.id_empleado"), nullable=False)
+    id_cliente = Column(UUID(as_uuid=True), ForeignKey("clientes.id_cliente"), nullable=False)
+    fecha_hora_venta = Column(DateTime, default=datetime.utcnow, nullable=False)
+    total = Column(Numeric(10, 2), nullable=False, default=0.00)
 
-    tienda = relationship("Tienda", back_populates="ventas")
-    empleado = relationship("Empleado", back_populates="ventas")
-    cliente = relationship("Cliente", back_populates="ventas")
-    detalles = relationship(
-        "DetalleVenta", back_populates="venta", cascade="all, delete-orphan"
-    )
+    cliente = relationship("Cliente")
+    tienda = relationship("Tienda")
+    empleado = relationship("Empleado")
+    detalles = relationship("DetalleVenta", back_populates="venta", cascade="all, delete-orphan")
