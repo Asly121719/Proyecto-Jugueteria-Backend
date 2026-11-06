@@ -1,4 +1,4 @@
-# src/schemas/categoria_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class CategoriaUpdate(BaseModel):
     es_electrico: Optional[bool] = None
 
 class CategoriaResponse(CategoriaBase):
-    id_categoria: int
+    id_categoria: UUID
 
     class Config:
         from_attributes = True

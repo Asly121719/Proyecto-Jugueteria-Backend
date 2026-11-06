@@ -1,4 +1,4 @@
-# src/schemas/cliente_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
@@ -18,7 +18,7 @@ class ClienteUpdate(BaseModel):
     telefono: Optional[str] = Field(None, max_length=50)
 
 class ClienteResponse(ClienteBase):
-    id_cliente: int
+    id_cliente: UUID
 
     class Config:
         from_attributes = True

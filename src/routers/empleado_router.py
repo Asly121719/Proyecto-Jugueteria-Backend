@@ -1,8 +1,7 @@
-# src/routers/empleado_router.py
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.Empleado import Empleado
 from src.schemas.empleado_schema import (
@@ -24,7 +23,7 @@ def obtener_empleados(skip: int = 0, limit: int = 100, db: Session = Depends(get
     return db.query(Empleado).offset(skip).limit(limit).all()
 
 @router.get("/{id_empleado}", response_model=EmpleadoResponse, status_code=HTTP_OK)
-def obtener_empleado(id_empleado: int, db: Session = Depends(get_db)):
+def obtener_empleado(id_empleado: UUID, db: Session = Depends(get_db)):
     item = db.query(Empleado).filter(Empleado.id_empleado == id_empleado).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Empleado no encontrado")
@@ -39,7 +38,7 @@ def crear_empleado(data: EmpleadoCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_empleado}", response_model=EmpleadoResponse, status_code=HTTP_OK)
-def actualizar_empleado(id_empleado: int, data: EmpleadoUpdate, db: Session = Depends(get_db)):
+def actualizar_empleado(id_empleado: UUID, data: EmpleadoUpdate, db: Session = Depends(get_db)):
     item = db.query(Empleado).filter(Empleado.id_empleado == id_empleado).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Empleado no encontrado")
@@ -50,7 +49,7 @@ def actualizar_empleado(id_empleado: int, data: EmpleadoUpdate, db: Session = De
     return item
 
 @router.delete("/{id_empleado}", status_code=HTTP_NO_CONTENT)
-def eliminar_empleado(id_empleado: int, db: Session = Depends(get_db)):
+def eliminar_empleado(id_empleado: UUID, db: Session = Depends(get_db)):
     item = db.query(Empleado).filter(Empleado.id_empleado == id_empleado).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Empleado no encontrado")

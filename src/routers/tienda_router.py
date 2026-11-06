@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from src.database import get_db
 from src.entities.Tienda import Tienda
 from src.schemas.tienda_schema import TiendaCreate, TiendaResponse, TiendaUpdate
@@ -19,7 +19,7 @@ def obtener_tiendas(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
     return db.query(Tienda).offset(skip).limit(limit).all()
 
 @router.get("/{id_tienda}", response_model=TiendaResponse, status_code=HTTP_OK)
-def obtener_tienda(id_tienda: int, db: Session = Depends(get_db)):
+def obtener_tienda(id_tienda: UUID, db: Session = Depends(get_db)):
     item = db.query(Tienda).filter(Tienda.id_tienda == id_tienda).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Tienda no encontrada")
@@ -34,7 +34,7 @@ def crear_tienda(data: TiendaCreate, db: Session = Depends(get_db)):
     return nuevo
 
 @router.put("/{id_tienda}", response_model=TiendaResponse, status_code=HTTP_OK)
-def actualizar_tienda(id_tienda: int, data: TiendaUpdate, db: Session = Depends(get_db)):
+def actualizar_tienda(id_tienda: UUID, data: TiendaUpdate, db: Session = Depends(get_db)):
     item = db.query(Tienda).filter(Tienda.id_tienda == id_tienda).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Tienda no encontrada")
@@ -45,7 +45,7 @@ def actualizar_tienda(id_tienda: int, data: TiendaUpdate, db: Session = Depends(
     return item
 
 @router.delete("/{id_tienda}", status_code=HTTP_NO_CONTENT)
-def eliminar_tienda(id_tienda: int, db: Session = Depends(get_db)):
+def eliminar_tienda(id_tienda: UUID, db: Session = Depends(get_db)):
     item = db.query(Tienda).filter(Tienda.id_tienda == id_tienda).first()
     if not item:
         raise HTTPException(status_code=HTTP_NOT_FOUND, detail="Tienda no encontrada")

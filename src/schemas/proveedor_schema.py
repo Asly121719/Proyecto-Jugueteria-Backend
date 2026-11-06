@@ -1,4 +1,4 @@
-# src/schemas/proveedor_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class ProveedorUpdate(BaseModel):
     pais_origen: Optional[str] = Field(None, max_length=100)
 
 class ProveedorResponse(ProveedorBase):
-    id_proveedor: int
+    id_proveedor: UUID
 
     class Config:
         from_attributes = True

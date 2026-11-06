@@ -1,4 +1,4 @@
-# src/schemas/tienda_schema.py
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class TiendaUpdate(BaseModel):
     horario_apertura: Optional[str] = Field(None, max_length=100)
 
 class TiendaResponse(TiendaBase):
-    id_tienda: int
+    id_tienda: UUID
 
     class Config:
         from_attributes = True
