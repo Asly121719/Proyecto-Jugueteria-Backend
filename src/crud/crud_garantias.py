@@ -1,9 +1,9 @@
+from uuid import UUID
 from src.database import SessionLocal
 from src.entities.garantias import Garantia
 
-
 def crear_garantia(
-    id_detalle_venta: int,
+    id_detalle_venta: UUID,
     duracion_meses: int = 12,
     tipo_cobertura: str = "Defecto de fábrica",
 ):
@@ -18,8 +18,7 @@ def crear_garantia(
         db.add(nueva_garantia)
         db.commit()
         print(
-            "\n[ÉXITO] Garantía creada en Neon con ID"
-            f" #{nueva_garantia.id_garantia} (Estado: Activa)."
+            f"\n[ÉXITO] Garantía creada en Neon con ID #{nueva_garantia.id_garantia} (Estado: Activa)."
         )
         return nueva_garantia
     except Exception as e:
@@ -28,16 +27,14 @@ def crear_garantia(
     finally:
         db.close()
 
-
-def consultar_garantia(id_garantia: int):
+def consultar_garantia(id_garantia: UUID):
     db = SessionLocal()
     try:
         g = db.query(Garantia).filter_by(id_garantia=id_garantia).first()
         if g:
             print(f"\n=== GARANTÍA #{g.id_garantia} ===")
             print(
-                f"Detalle Venta ID: {g.id_detalle_venta} | Duración:"
-                f" {g.duracion_meses} meses"
+                f"Detalle Venta ID: {g.id_detalle_venta} | Duración: {g.duracion_meses} meses"
             )
             print(f"Cobertura: {g.tipo_cobertura} | Estado: {g.estado_garantia}")
         else:
@@ -45,8 +42,7 @@ def consultar_garantia(id_garantia: int):
     finally:
         db.close()
 
-
-def actualizar_garantia(id_garantia: int, nuevo_estado: str):
+def actualizar_garantia(id_garantia: UUID, nuevo_estado: str):
     db = SessionLocal()
     try:
         g = db.query(Garantia).filter_by(id_garantia=id_garantia).first()
@@ -54,16 +50,14 @@ def actualizar_garantia(id_garantia: int, nuevo_estado: str):
             g.estado_garantia = nuevo_estado
             db.commit()
             print(
-                f"\n[ÉXITO] Garantía #{id_garantia} actualizada a estado:"
-                f" '{nuevo_estado}'."
+                f"\n[ÉXITO] Garantía #{id_garantia} actualizada a estado: '{nuevo_estado}'."
             )
         else:
             print(f"\n[ERROR] Garantía #{id_garantia} no encontrada.")
     finally:
         db.close()
 
-
-def eliminar_garantia(id_garantia: int):
+def eliminar_garantia(id_garantia: UUID):
     db = SessionLocal()
     try:
         g = db.query(Garantia).filter_by(id_garantia=id_garantia).first()
